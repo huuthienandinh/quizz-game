@@ -73,6 +73,7 @@ function App() {
         })
       }
     })
+    setQuestions(newQuestions)
     console.log(newQuestions)
 
   }
@@ -90,7 +91,7 @@ function App() {
     <div key={question}>
         <h2>{decode(question.question)}</h2>
         {question.all_answers.map(answ =>
-            <button onClick={()=>changestyle(answ.answer)} className='boxAnswers' key={answ.answer} >{decode(answ.answer)}</button>)}
+            <button onClick={()=>changestyle(answ.answer)} className={answ.style === true ? 'boxAnswers' : 'boxAnswersClicked'} key={answ.answer} >{decode(answ.answer)}</button>)}
 
     </div>)
 
