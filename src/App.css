@@ -7,7 +7,7 @@ body{
 
 
 .container {
-    background-color: antiquewhite;
+    background-color: #FBF6E9;
     margin: 50px auto;
     padding: 50px 50px;
     border-radius: 10px;
@@ -18,27 +18,41 @@ body{
 .boxAnswers {
     height: 40px;
     width: auto;
-    padding: 5px 20px 20px 20px;
+    padding: 8px 20px 20px 20px;
+    margin: 5px 5px 5px 5px;
     border-radius:20px;
     box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 0.15);
     text-align: center;
     font-weight: 700;
-    background-color: rgb(200, 224, 226);
+    background-color: rgba(255, 255, 255, 0.918);
+    font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif ;
+
     
 }
 .boxAnswersClicked{
     height: 40px;
     width: auto;
-    padding: 5px 20px 20px 20px;
+    padding: 8px 20px 20px 20px;
+    margin: 5px 5px 5px 5px;
     border-radius:20px;
     box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 0.15);
     text-align: center;
     font-weight: 700;
-    background-color: rgb(206, 162, 74);
+    background-color: rgb(229, 241, 177);
+    font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif ;
 
 }
 
 .answers-container{
     display: grid;
     grid-template: auto auto / repeat(5, 1fr);
+}
+
+
+.textQuestion{
+    font-size: 15px;
+    color: #118B50;
+    margin-bottom: 20px;
+    font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+
 }

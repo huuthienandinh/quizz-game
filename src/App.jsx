@@ -37,8 +37,7 @@ function App() {
       const all_answers_on = randomAnswer.map(answer =>{
           return{
             answer: answer,
-            style: true,
-            on: true,
+            style: false,
           }
       })
       const indexCorrectAnswer = randomAnswer.findIndex(answer => answer == correct_answer)
@@ -52,6 +51,7 @@ function App() {
       correct_answer: correct_answer,
       incorrect_answers: incorrect_answers,
       all_answers: all_answers_on,
+      isClick: false,
     }
     })
 
@@ -61,18 +61,22 @@ function App() {
   }
 
 
-  function changestyle(id){
-    const newQuestions = questions.map(question => { 
-      return {
-        ...question,
-        all_answers: question.all_answers.map(answ => {
-          return answ.answer === id ? {
-            ...answ,
-            style: !answ.style,
-          }: answ
-        })
-      }
-    })
+  function changestyle(questionId, answerId){
+    const newQuestions = questions.map((question, qId) => 
+      qId === questionId 
+        ?{ 
+          ...question,  
+          all_answers: question.all_answers.map((answer, aId) => {
+            return answerId === aId ? {
+              ...answer,
+              style: !answer.style,
+            }: answer
+          })
+          
+        }
+        : question)
+
+
     setQuestions(newQuestions)
     console.log(newQuestions)
 
@@ -86,12 +90,18 @@ function App() {
 
 
 
-  const QuestionElement = questions.map(question =>
+  const QuestionElement = questions.map((question, questionId) =>
 
-    <div key={question}>
-        <h2>{decode(question.question)}</h2>
-        {question.all_answers.map(answ =>
-            <button onClick={()=>changestyle(answ.answer)} className={answ.style === true ? 'boxAnswers' : 'boxAnswersClicked'} key={answ.answer} >{decode(answ.answer)}</button>)}
+    <div key={questionId} >
+
+        <h2 className='textQuestion'>
+          {questionId + 1}. {decode(question.question)} (<span style={{ textDecoration: 'underline' }}>{question.type}</span>)
+        </h2>
+
+        {question.all_answers.map((answer, answerId) =>
+            <button onClick={()=>changestyle(questionId, answerId)} className={answer.style === false ? 'boxAnswers' : 'boxAnswersClicked'} key={answer.answer}> 
+              {decode(answer.answer)} 
+            </button>)}
 
     </div>)
 
