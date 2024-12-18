@@ -62,19 +62,38 @@ function App() {
 
 
   function changestyle(questionId, answerId){
-    const newQuestions = questions.map((question, qId) => 
-      qId === questionId 
-        ?{ 
-          ...question,  
+    const newQuestions = questions.map((question, qId) => {
+      if (qId === questionId) {
+        return {
+          ...question,
           all_answers: question.all_answers.map((answer, aId) => {
-            return answerId === aId ? {
-              ...answer,
-              style: !answer.style,
-            }: answer
-          })
-          
-        }
-        : question)
+            // Trường hợp 1: Chưa click gì, chỉ thay đổi style của answer được click
+            if (!question.isClick && aId === answerId) {
+              return {
+                ...answer,
+                style: true, // Đổi style của answer được click
+              };
+            }
+    
+            // Trường hợp 2: Đã click, chỉ reset style của answer đã được click
+            if (question.isClick && question.clickedAnswer === aId) {
+              return {
+                ...answer,
+                style: false, // Trả lại trạng thái ban đầu
+              };
+            }
+    
+            // Các answer khác không thay đổi
+            return answer;
+          }),
+          // Cập nhật trạng thái click
+          isClick: question.isClick ? false : true,
+          clickedAnswer: question.isClick ? null : answerId, // Lưu hoặc reset answer đã click
+        };
+      }
+    
+      return question; // Câu hỏi khác không thay đổi
+    });
 
 
     setQuestions(newQuestions)
