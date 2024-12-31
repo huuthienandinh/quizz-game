@@ -62,39 +62,23 @@ function App() {
 
 
   function changestyle(questionId, answerId){
-    const newQuestions = questions.map((question, qId) => {
-      if (qId === questionId) {
-        return {
+    const newQuestions = questions.map((question, qId) => 
+    qId === questionId
+      ? {
           ...question,
-          all_answers: question.all_answers.map((answer, aId) => {
-            // Trường hợp 1: Chưa click gì, chỉ thay đổi style của answer được click
-            if (!question.isClick && aId === answerId) {
-              return {
-                ...answer,
-                style: true, // Đổi style của answer được click
-              };
-            }
-    
-            // Trường hợp 2: Đã click, chỉ reset style của answer đã được click
-            if (question.isClick && question.clickedAnswer === aId) {
-              return {
-                ...answer,
-                style: false, // Trả lại trạng thái ban đầu
-              };
-            }
-    
-            // Các answer khác không thay đổi
-            return answer;
-          }),
-          // Cập nhật trạng thái click
-          isClick: question.isClick ? false : true,
-          clickedAnswer: question.isClick ? null : answerId, // Lưu hoặc reset answer đã click
-        };
-      }
-    
-      return question; // Câu hỏi khác không thay đổi
-    });
-
+          all_answers: question.all_answers.map((answer, aId) => ({
+            ...answer,
+            style: !question.isClick && aId === answerId // Đổi style nếu chưa click
+              ? true
+              : question.isClick && question.clickedAnswer === aId // Reset nếu click lại
+              ? false
+              : answer.style, // Giữ nguyên style
+          })),
+          isClick: !question.isClick, // Đổi trạng thái câu hỏi
+          clickedAnswer: question.isClick ? null : answerId, // Cập nhật answer đã click
+        }
+      : question // Các câu hỏi khác giữ nguyên
+  );
 
     setQuestions(newQuestions)
     console.log(newQuestions)
