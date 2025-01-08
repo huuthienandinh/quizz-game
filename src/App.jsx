@@ -4,7 +4,7 @@ import React from 'react'
 import QandA from './QandA'
 import {nanoid} from 'nanoid'
 import {decode} from 'html-entities'
-
+import Swal from 'sweetalert2'
 
 function App() {
 
@@ -85,10 +85,16 @@ function App() {
 
   }
 
+  const handleClick = () => {
+    Swal.fire("SweetAlert2 is working!");
+
+  }
+
 
   function startGame(){
     const newQuestions = getAllQuestions(dataQuizz)
     setQuestions(newQuestions) 
+
   }
 
 
@@ -98,7 +104,7 @@ function App() {
     <div key={questionId} >
 
         <h2 className='textQuestion'>
-          {questionId + 1}. {decode(question.question)} (<span style={{ textDecoration: 'underline' }}>{question.type}</span>)
+          {questionId + 1}. {decode(question.question)} ( <span style={{ textDecoration: 'underline' }}>{question.difficulty}</span>)
         </h2>
 
         {question.all_answers.map((answer, answerId) =>
@@ -108,11 +114,14 @@ function App() {
 
     </div>)
 
+
+
   return (
     <main>    
       <div className='container'>   
         <button  onClick={startGame}> Start Game</button>
         {QuestionElement}
+        <button onClick={handleClick} className='buttonAnswer'> Check answer </button>
       </div> 
     </main>
      

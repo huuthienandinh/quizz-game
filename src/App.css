@@ -54,5 +54,18 @@ body{
     color: #118B50;
     margin-bottom: 20px;
     font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-
 }
+
+.buttonAnswer{
+    height: 40px;
+    width: 150px;
+    align-items: center;
+    padding: auto;
+    margin: 50px 300px;
+    font-size: 20px;
+    font-family: 'Times New Roman', Times, serif;
+    border-radius: 15px;
+    background-color: #A9C46C;
+    color: #F4FFC3;
+}
+
