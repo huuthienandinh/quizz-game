@@ -86,7 +86,7 @@ function App() {
   }
 
   const handleClick = () => {
-    Swal.fire("SweetAlert2 is working!");
+    Swal.fire("you got 3 answers right");
 
   }
 
