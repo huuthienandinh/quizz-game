@@ -8,7 +8,7 @@ import Swal from 'sweetalert2'
 
 function App() {
 
-
+  let countPoint = 1;
   // mot lan clicked la luu lai gia tri do, xong se check vs dap an tai do
   const [dataQuizz, setDataQuizz] = React.useState([])
   const [questions, setQuestions] =React.useState([])
@@ -85,6 +85,23 @@ function App() {
 
   }
 
+
+
+  function countPointFn(questionId) {
+    const newQuestions = questions.map((question, qId) => {
+
+        if (question.isClick) {
+          countPoint++; 
+        }
+        return {
+          ...question, 
+        };
+    });
+    console.log(countPoint)
+    
+  }
+
+
   const handleClick = () => {
     Swal.fire("you got 3 answers right");
 
@@ -108,7 +125,7 @@ function App() {
         </h2>
 
         {question.all_answers.map((answer, answerId) =>
-            <button onClick={()=>changestyle(questionId, answerId)} className={answer.style === false ? 'boxAnswers' : 'boxAnswersClicked'} key={answer.answer}> 
+            <button onClick={()=>{changestyle(questionId, answerId); countPointFn(questionId)}} className={answer.style === false ? 'boxAnswers' : 'boxAnswersClicked'} key={answer.answer}> 
               {decode(answer.answer)} 
             </button>)}
 
