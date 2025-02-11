@@ -8,10 +8,10 @@ import Swal from 'sweetalert2'
 
 function App() {
 
-  let countPoint = 1;
   // mot lan clicked la luu lai gia tri do, xong se check vs dap an tai do
   const [dataQuizz, setDataQuizz] = React.useState([])
   const [questions, setQuestions] =React.useState([])
+  const [point, setPoint] = React.useState(0)
 
   const [answers, setAnswers] = React.useState(
     [{
@@ -86,20 +86,12 @@ function App() {
   }
 
 
+    React.useEffect(() => {
+      const clickedCount = questions.filter(question => question.isClick).length;
+      setPoint(clickedCount)
+    }, [questions]);
 
-  function countPointFn(questionId) {
-    const newQuestions = questions.map((question, qId) => {
 
-        if (question.isClick) {
-          countPoint++; 
-        }
-        return {
-          ...question, 
-        };
-    });
-    console.log(countPoint)
-    
-  }
 
 
   const handleClick = () => {
@@ -125,7 +117,7 @@ function App() {
         </h2>
 
         {question.all_answers.map((answer, answerId) =>
-            <button onClick={()=>{changestyle(questionId, answerId); countPointFn(questionId)}} className={answer.style === false ? 'boxAnswers' : 'boxAnswersClicked'} key={answer.answer}> 
+            <button onClick={()=>changestyle(questionId, answerId)} className={answer.style === false ? 'boxAnswers' : 'boxAnswersClicked'} key={answer.answer}> 
               {decode(answer.answer)} 
             </button>)}
 
@@ -137,6 +129,7 @@ function App() {
     <main>    
       <div className='container'>   
         <button  onClick={startGame}> Start Game</button>
+        <button> Answer done {point}</button>
         {QuestionElement}
         <button onClick={handleClick} className='buttonAnswer'> Check answer </button>
       </div> 
