@@ -12,6 +12,7 @@ function App() {
   const [dataQuizz, setDataQuizz] = React.useState([])
   const [questions, setQuestions] =React.useState([])
   const [point, setPoint] = React.useState(0)
+  const [clickedAnswer, setclickedAnswer] = React.useState(0)
 
   const [answers, setAnswers] = React.useState(
     [{
@@ -60,6 +61,10 @@ function App() {
 
   }
 
+  function checkAnswer(){
+    
+  }
+
 
   function changestyle(questionId, answerId){
     const newQuestions = questions.map((question, qId) => 
@@ -87,15 +92,15 @@ function App() {
 
 
     React.useEffect(() => {
-      const clickedCount = questions.filter(question => question.isClick).length;
-      setPoint(clickedCount)
+      const clickedAnswer = questions.filter(question => question.isClick).length;
+      setclickedAnswer(clickedAnswer)
     }, [questions]);
 
 
 
 
   const handleClick = () => {
-    Swal.fire("you got 3 answers right");
+    Swal.fire("you got " + clickedAnswer + " answers right");
 
   }
 
@@ -129,7 +134,7 @@ function App() {
     <main>    
       <div className='container'>   
         <button  onClick={startGame}> Start Game</button>
-        <button> Answer done {point}</button>
+        <button> Answer done {clickedAnswer}</button>
         {QuestionElement}
         <button onClick={handleClick} className='buttonAnswer'> Check answer </button>
       </div> 
