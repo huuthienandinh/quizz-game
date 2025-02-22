@@ -61,9 +61,17 @@ function App() {
 
   }
 
-  function checkAnswer(){
-    
-  }
+  function checkAnswer() {
+    const newPoints = questions.reduce((count, question) => {
+        if (question.all_answers.some(answer => answer.style === true && answer.answer === question.correct_answer)) {
+            return count + 1;
+        } 
+        return count;
+    }, 0);
+
+    setPoint(newPoints); 
+    Swal.fire("you got " + newPoints + " answers right");
+}
 
 
   function changestyle(questionId, answerId){
@@ -99,18 +107,12 @@ function App() {
 
 
 
-  const handleClick = () => {
-    Swal.fire("you got " + clickedAnswer + " answers right");
-
-  }
-
 
   function startGame(){
     const newQuestions = getAllQuestions(dataQuizz)
     setQuestions(newQuestions) 
 
   }
-
 
 
   const QuestionElement = questions.map((question, questionId) =>
@@ -136,7 +138,7 @@ function App() {
         <button  onClick={startGame}> Start Game</button>
         <button> Answer done {clickedAnswer}</button>
         {QuestionElement}
-        <button onClick={handleClick} className='buttonAnswer'> Check answer </button>
+        <button onClick={checkAnswer} className='buttonAnswer'> Check answer </button>
       </div> 
     </main>
      
