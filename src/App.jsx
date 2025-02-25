@@ -114,14 +114,17 @@ function App() {
 
 
   return (
-    <main>    
-      <div className='container'>   
-        <button  onClick={startGame}> Start Game</button>
-        <button> Answer done {clickedAnswer}</button>
-        {QuestionElement}
-        <button onClick={checkAnswer} className='buttonAnswer'> Check answer </button>
-      </div> 
-    </main>
+      <main>    
+        <div className='container'>   
+          <div className='row'>
+            <button  onClick={startGame}> Start Game</button>
+            <div> Answer done: {clickedAnswer}</div> 
+          </div>
+          {QuestionElement}
+          {clickedAnswer === 10 && <button onClick={checkAnswer} className='buttonAnswer'> Check answer </button>}
+      
+        </div> 
+      </main>
      
   )
 }

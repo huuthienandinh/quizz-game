@@ -6,6 +6,16 @@ body{
 }
 
 
+
+
+
+.row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+
 .container {
     background-color: #FBF6E9;
     margin: 50px auto;
