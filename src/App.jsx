@@ -13,19 +13,28 @@ function App() {
 
 
   React.useEffect(() => {
-    fetch("https://opentdb.com/api.php?amount=10")
-    .then(res => res.json())
-    .then(data => {
-      if (data.results){
-        setDataQuizz(data.results)
-      }
-      else{
-        console.error(" Invalid data format!", data)
-      }
-    })   
-    .catch(error => console.error("Failed to fetch data!", error))
+    const fetchData = async () => {
+      try {
+        const response = await fetch("https://opentdb.com/api.php?amount=10");
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
 
-  },[])
+        const data = await response.json();
+
+        if (data.results) {
+          setDataQuizz(data.results);
+        } else {
+          console.error("Invalid data format!", data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch data!", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   function getAllQuestions(array) {
      const mixAnswers = array.map(array => {                                                  ///mix and random answers
