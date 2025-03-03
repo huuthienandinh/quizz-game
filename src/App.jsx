@@ -118,7 +118,7 @@ function App() {
         <div className='container'>   
           <div className='row'>
             <button  onClick={startGame}> Start Game</button>
-            <div> Answer done: {clickedAnswer}</div> 
+            <div> Answers done: {clickedAnswer}</div> 
           </div>
           {QuestionElement}
           {clickedAnswer === 10 && <button onClick={checkAnswer} className='buttonAnswer'> Check answer </button>}
