@@ -1,141 +1,195 @@
 
-import './App.css'
-import React from 'react'
-import {decode} from 'html-entities'
-import Swal from 'sweetalert2'
+import './App.css';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { decode } from 'html-entities';
+import Swal from 'sweetalert2';
+import confetti from 'canvas-confetti';
 
-function App() {
-
-  const [dataQuizz, setDataQuizz] = React.useState([])
-  const [questions, setQuestions] =React.useState([])
-  const [point, setPoint] = React.useState(0)
-  const [clickedAnswer, setclickedAnswer] = React.useState(0)
-
-
-  React.useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch("https://opentdb.com/api.php?amount=10");
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-
-        const data = await response.json();
-
-        if (data.results) {
-          setDataQuizz(data.results);
-        } else {
-          console.error("Invalid data format!", data);
-        }
-      } catch (error) {
-        console.error("Failed to fetch data!", error);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  function getAllQuestions(array) {
-     const mixAnswers = array.map(array => {                                                  ///mix and random answers
-      const {correct_answer, incorrect_answers} = array;                                  
-      const all_answers = [...incorrect_answers, correct_answer]
-      const randomAnswer = all_answers.slice().sort(() => Math.random() - 0.5)
-      console.log(randomAnswer)
-      const all_answers_on = randomAnswer.map(answer =>{                                       /// Add style for all answers
-          return{
-            answer: answer,
-            style: false,
-          }
-      })
-    return{
-      ...array,
-      correct_answer: correct_answer,
-      incorrect_answers: incorrect_answers,
-      all_answers: all_answers_on,
-      isClick: false,
-    }
-    })
-
-    console.log(mixAnswers)
-    return mixAnswers
-
+function shuffle(array) {
+  const a = array.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
   }
-
-  function checkAnswer() {
-    const newPoints = questions.reduce((count, question) => {
-        if (question.all_answers.some(answer => answer.style === true && answer.answer === question.correct_answer)) {
-            return count + 1;
-        } 
-        return count;
-    }, 0);
-
-    setPoint(newPoints); 
-    Swal.fire("You got " + newPoints + " answers right");
+  return a;
 }
 
+function AnswerButton({ answer, selected, onClick }) {
+  const className = selected ? 'boxAnswersClicked' : 'boxAnswers';
+  return (
+    <button className={className} onClick={onClick} key={answer}>
+      {decode(answer)}
+    </button>
+  );
+}
 
-  function changeStyle(questionId, answerId) {
-    setQuestions(prevQuestions =>
-      prevQuestions.map((question, qId) =>
-        qId === questionId
-          ? {
-              ...question,
-              all_answers: question.all_answers.map((answer, aId) => ({
-                ...answer,
-                style: aId === answerId, // Only change style if answer is chosen from user
-              })),
-              isClick: true, // Question is clicked by user
-              clickedAnswer: answerId,
-            }
-          : question
-      )
-    );
-  }
-
-    React.useEffect(() => {
-      const clickedAnswer = questions.filter(question => question.isClick).length;
-      setclickedAnswer(clickedAnswer)
-    }, [questions]);
-
-
-  function startGame(){
-    const newQuestions = getAllQuestions(dataQuizz)
-    setQuestions(newQuestions) 
-  }
-
-
-
-  const QuestionElement = questions.map((question, questionId) =>
-
-    <div key={questionId} >
-
-        <h2 className='textQuestion'>
-          {questionId + 1}. {decode(question.question)} ( <span style={{ textDecoration: 'underline' }}>{question.difficulty}</span>)
-        </h2>
-
-        {question.all_answers.map((answer, answerId) =>
-            <button onClick={()=>changeStyle(questionId, answerId)} className={answer.style === false ? 'boxAnswers' : 'boxAnswersClicked'} key={answer.answer}> 
-              {decode(answer.answer)} 
-            </button>)}
-
-    </div>)
-
+function Question({ question, qIndex, onAnswer }) {
+  const getDifficultyClass = (difficulty) => {
+    switch (difficulty.toLowerCase()) {
+      case 'easy':
+        return 'difficultyEasy';
+      case 'medium':
+        return 'difficultyMedium';
+      case 'hard':
+        return 'difficultyHard';
+      default:
+        return '';
+    }
+  };
 
   return (
-      <main>    
-        <div className='container'>   
-          <div className='row'>
-            <button  onClick={startGame}> Start Game</button>
-            <div> Answers done: {clickedAnswer}</div> 
-          </div>
-          {QuestionElement}
-          {clickedAnswer === 10 && <button onClick={checkAnswer} className='buttonAnswer'> Check answer </button>}
-      
-        </div> 
-      </main>
-     
-  )
+    <div>
+      <h2 className="textQuestion">
+        {qIndex + 1}. {decode(question.question)} (
+        <span className={getDifficultyClass(question.difficulty)}>
+          {question.difficulty}
+        </span>
+        )
+      </h2>
+      {question.allAnswers.map((ans, aIndex) => (
+        <AnswerButton
+          key={ans.answer}
+          answer={ans.answer}
+          selected={ans.selected}
+          onClick={() => onAnswer(qIndex, aIndex)}
+        />
+      ))}
+    </div>
+  );
 }
 
-export default App
+export default function App() {
+  const [rawData, setRawData] = useState([]);
+  const [questions, setQuestions] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    async function fetchQuizData() {
+      setLoading(true);
+      try {
+        const res = await fetch('https://opentdb.com/api.php?amount=10');
+        if (!res.ok) throw new Error(res.statusText);
+        const json = await res.json();
+        setRawData(json.results || []);
+      } catch (err) {
+        console.error(err);
+        setError('Unable to load questions');
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchQuizData();
+  }, []);
+
+  const initialiseQuestions = useCallback(
+    (data) =>
+      data.map((item) => {
+        const allAnswers = shuffle([
+          ...item.incorrect_answers,
+          item.correct_answer,
+        ]).map((ans) => ({ answer: ans, selected: false }));
+
+        return {
+          ...item,
+          allAnswers,
+          isAnswered: false,
+        };
+      }),
+    []
+  );
+
+  const startGame = useCallback(() => {
+    setQuestions(initialiseQuestions(rawData));
+  }, [initialiseQuestions, rawData]);
+
+  const handleAnswer = useCallback((qIdx, aIdx) => {
+    setQuestions((prev) =>
+      prev.map((q, i) =>
+        i === qIdx
+          ? {
+              ...q,
+              isAnswered: true,
+              allAnswers: q.allAnswers.map((ans, j) => ({
+                ...ans,
+                selected: j === aIdx,
+              })),
+            }
+          : q
+      )
+    );
+  }, []);
+
+  const answersDone = useMemo(
+    () => questions.filter((q) => q.isAnswered).length,
+    [questions]
+  );
+
+  const calculateScore = useCallback(() => {
+    const score = questions.reduce(
+      (sum, q) =>
+        sum +
+        (q.allAnswers.some(
+          (a) => a.selected && a.answer === q.correct_answer
+        )
+          ? 1
+          : 0),
+      0
+    );
+    // burst confetti before showing alert
+    confetti({
+      particleCount: 200,
+      spread: 160,
+      origin: { y: 0.6 },
+    });
+
+    Swal.fire({
+      title: `You got ${score} answers right`,
+      icon: 'success',
+      confirmButtonText: 'Play again',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        startGame();
+      }
+    });
+  }, [questions, startGame]);
+
+  const questionElements = useMemo(
+    () =>
+      questions.map((q, idx) => (
+        <Question
+          key={idx}
+          question={q}
+          qIndex={idx}
+          onAnswer={handleAnswer}
+        />
+      )),
+    [questions, handleAnswer]
+  );
+
+  return (
+    <main>
+      <div className="container">
+        <div className="row">
+          <button className="startGameBtn" onClick={startGame} disabled={loading || !rawData.length}>
+            Start Game
+          </button>
+        </div>
+        <div className="answerCounterContainer">
+          <div className="answerCounter">Answers done: {answersDone}/10</div>
+        </div>
+
+        {error && <div className="error">{error}</div>}
+        {loading && <div>Loading questions…</div>}
+
+        {questionElements}
+
+        {answersDone === 10 && (
+          <button onClick={calculateScore} className="checkAnswerBtn">
+            Check answer
+          </button>
+        )}
+      </div>
+    </main>
+  );
+}
